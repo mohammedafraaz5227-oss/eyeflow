@@ -216,3 +216,26 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+.env.local
+
+# Models
+models/*.onnx
+models/*.pt
+models/*.pth
+models/*.weights
+
+# Temp/Output
+eye_tracking_control/experiments/
+eye_tracking_control/tools/scratch/
+*.jpg
+*.png
