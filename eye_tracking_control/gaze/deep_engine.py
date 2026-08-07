@@ -13,6 +13,7 @@ from typing import Optional, Tuple
 import numpy as np
 
 from core.types import GazePrediction
+from core.model_manager import ModelManager
 
 
 class DeepGazeEngine:
@@ -22,14 +23,15 @@ class DeepGazeEngine:
     and runs inference to return absolute pitch and yaw angles.
     """
     
-    def __init__(self, model_path: str = "models/l2cs_net_resnet50.onnx") -> None:
+    def __init__(self, model_id: str = "l2cs_net_gaze360") -> None:
         """Initialize the deep gaze engine.
         
         Args:
-            model_path: Path to the ONNX model file.
+            model_id: The ID of the model to request from the ModelManager.
         """
         self._logger = logging.getLogger(self.__class__.__name__)
-        self._model_path = self._resolve_model_path(model_path)
+        self._model_id = model_id
+        self._model_path: Optional[str] = None
         self._session = None
         self._input_name = ""
         self._output_names = []
@@ -50,9 +52,11 @@ class DeepGazeEngine:
         if self._initialized:
             return True
             
-        if not os.path.exists(self._model_path):
-            self._logger.error("Deep gaze model not found: %s", self._model_path)
-            self._logger.info("Please download the L2CS-Net ONNX model into models/ directory.")
+        manager = ModelManager()
+        self._model_path = manager.get_model(self._model_id)
+            
+        if not self._model_path or not os.path.exists(self._model_path):
+            self._logger.error("Failed to acquire model '%s' from ModelManager.", self._model_id)
             return False
             
         try:
