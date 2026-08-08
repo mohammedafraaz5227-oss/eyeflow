@@ -5,3 +5,4 @@ scipy>=1.11.0
 pyautogui>=0.9.54
 PyQt6>=6.5.0
 pynput>=1.7.6
+onnxruntime>=1.15.0

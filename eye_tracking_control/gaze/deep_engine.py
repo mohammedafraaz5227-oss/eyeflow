@@ -118,8 +118,8 @@ class DeepGazeEngine:
         if face_crop.size == 0:
             return None
             
-        # Resize to 224x224
-        img = cv2.resize(face_crop, (224, 224))
+        # Resize to 448x448 (as required by this specific ONNX export)
+        img = cv2.resize(face_crop, (448, 448))
         
         # BGR to RGB
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -130,7 +130,7 @@ class DeepGazeEngine:
         std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
         img = (img - mean) / std
         
-        # HWC to CHW -> (1, 3, 224, 224)
+        # HWC to CHW -> (1, 3, 448, 448)
         img = np.transpose(img, (2, 0, 1))
         img = np.expand_dims(img, axis=0)
         

@@ -11,6 +11,7 @@ import os
 import hashlib
 import logging
 import urllib.request
+import ssl
 from typing import Dict, Optional
 from dataclasses import dataclass
 
@@ -31,10 +32,10 @@ class ModelManager:
     REGISTRY: Dict[str, ModelMetadata] = {
         "l2cs_net_gaze360": ModelMetadata(
             name="l2cs_net_gaze360",
-            url="https://github.com/yakhyo/gaze-estimation/releases/download/v1.0/L2CSNet_gaze360.onnx",
-            filename="L2CSNet_gaze360.onnx",
-            expected_size=94402698,
-            sha256="482a0b12", # We will replace this with the exact hash after downloading
+            url="https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet50_gaze.onnx",
+            filename="resnet50_gaze.onnx",
+            expected_size=95425874,
+            sha256="bb28d421565adc4dfb665742f8fc80bdef36dd8caa0c87e040e0937f9fdca9a6",
             description="L2CS-Net ResNet-50 trained on Gaze360 for absolute Pitch/Yaw prediction."
         )
     }
@@ -123,8 +124,13 @@ class ModelManager:
         self._logger.info("Downloading %s from %s...", meta.name, meta.url)
         
         try:
+            # Handle macOS Python SSL certificate issues
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+
             req = urllib.request.Request(meta.url, headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req) as response, open(dest_path, 'wb') as out_file:
+            with urllib.request.urlopen(req, context=ctx) as response, open(dest_path, 'wb') as out_file:
                 total_size = int(response.getheader('Content-Length', 0))
                 block_size = 1024 * 8
                 count = 0
