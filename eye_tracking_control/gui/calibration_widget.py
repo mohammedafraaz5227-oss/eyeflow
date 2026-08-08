@@ -109,7 +109,7 @@ class CalibrationWidget(QWidget):
     MIN_ACCEPTED = 50
     TARGET_ACCEPTED = 75
     MAX_ACCEPTED = 100
-    EARLY_STOP_VARIANCE = 0.003  # variance below which we can stop early at MIN
+    EARLY_STOP_VARIANCE = 0.5  # degrees variance below which we can stop early at MIN
     QUALITY_THRESHOLD = 0.4  # minimum per-point quality score to pass
 
     def __init__(self) -> None:
@@ -301,8 +301,8 @@ class CalibrationWidget(QWidget):
             ps.accepted_frames / max(1, ps.total_frames)
         )
         conf_score = report.avg_confidence
-        # Lower variance = better; map to 0-1 score (0.01 → 1.0, 0.05 → 0.0)
-        var_score = max(0.0, 1.0 - report.avg_feature_variance / 0.02)
+        # Lower variance = better; map to 0-1 score (0.5deg -> ~0.75, 2.0deg -> 0.0)
+        var_score = max(0.0, 1.0 - report.avg_feature_variance / 2.0)
 
         report.quality_score = (
             0.3 * acceptance_rate + 0.3 * conf_score + 0.4 * var_score
@@ -496,7 +496,7 @@ class CalibrationWidget(QWidget):
         # Early stop: if variance is very low and we have minimum frames
         if n >= self.MIN_ACCEPTED:
             feature_arr = np.array(ps.accepted_features, dtype=float)
-            final_var = float(np.mean(np.std(feature_arr[:, :4], axis=0)))
+            final_var = float(np.mean(np.std(feature_arr[:, :2], axis=0)))
 
             if final_var <= self.EARLY_STOP_VARIANCE:
                 self._logger.info(
@@ -578,7 +578,7 @@ class CalibrationWidget(QWidget):
 
         # Feature stability indicator (outer ring)
         variance = self._fixation_detector.current_variance
-        stability = max(0.0, 1.0 - variance / 0.02)
+        stability = max(0.0, 1.0 - variance / 2.0)
         stability_color = QColor(
             int(255 * (1 - stability)),
             int(255 * stability),

@@ -31,7 +31,7 @@ class CalibrationFixationDetector:
     def __init__(
         self,
         window_size: int = 15,
-        variance_threshold: float = 0.008,
+        variance_threshold: float = 1.0,
         stability_frames: int = 5,
     ) -> None:
         """
@@ -40,7 +40,7 @@ class CalibrationFixationDetector:
                 rolling window.
             variance_threshold: Maximum mean per-dimension standard deviation
                 for the feature window to be considered "stable".
-                This operates on normalized iris-relative coordinates (~0-1 range).
+                This operates on Pitch/Yaw angles in degrees.
             stability_frames: Number of consecutive frames the variance must
                 remain below the threshold before fixation is declared.
         """
@@ -88,10 +88,9 @@ class CalibrationFixationDetector:
 
         # Compute per-dimension standard deviation across the window
         arr = np.array(self._feature_buffer, dtype=float)
-        # Only use the first 4 features (iris positions) for fixation detection.
-        # Head pose and face geometry change independently of gaze fixation.
-        iris_features = arr[:, :4]
-        per_dim_std = np.std(iris_features, axis=0)
+        # Only use the first 2 features (Pitch, Yaw) for fixation detection.
+        gaze_angles = arr[:, :2]
+        per_dim_std = np.std(gaze_angles, axis=0)
         mean_std = float(np.mean(per_dim_std))
         self._current_variance = mean_std
 

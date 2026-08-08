@@ -19,6 +19,7 @@ from camera.capture import CameraCapture
 from tracking.face_tracker import FaceTracker
 from tracking.eye_tracker import EyeTracker
 from gaze.estimator import GazeEstimator
+from gaze.deep_engine import DeepGazeEngine
 from gaze.calibration import CalibrationSystem
 from gaze.interaction_engine import InteractionEngine
 from cursor.controller import CursorController
@@ -82,6 +83,7 @@ class PipelineController:
         self._eye_tracker = EyeTracker(
             ear_threshold=settings.blink.ear_threshold,
         )
+        self._deep_gaze = DeepGazeEngine()
         self._gaze_estimator = GazeEstimator(
             smoothing_factor=settings.gaze.smoothing_factor,
         )
@@ -142,6 +144,9 @@ class PipelineController:
         self._logger.info("Starting pipeline...")
         try:
             self._face_tracker.initialize()
+            if not self._deep_gaze.initialize():
+                self._logger.error("Failed to initialize DeepGazeEngine")
+                
             self._camera.start()
         except Exception as e:
             self._logger.error("Failed to start pipeline: %s", e)
@@ -256,8 +261,10 @@ class PipelineController:
             blink_event = self._blink_detector.update(left_ear, right_ear, data.timestamp)
             data.blink = blink_event
             
-            # 4. Gaze Estimation
-            gaze_data = self._gaze_estimator.estimate(left_eye, right_eye, face_data)
+            # 4. Gaze Estimation (Deep Learning)
+            prediction = self._deep_gaze.predict(data.frame.frame, face_data.bounding_box)
+            data.deep_gaze = prediction
+            gaze_data = self._gaze_estimator.estimate(prediction)
             data.gaze = gaze_data
             
             # 5. Tracking Confidence
