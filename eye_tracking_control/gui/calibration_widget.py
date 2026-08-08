@@ -449,7 +449,7 @@ class CalibrationWidget(QWidget):
             ps.head_rejections += 1
 
         # Gate 4: Feature availability
-        if not rejected and (not features or len(features) < 4):
+        if not rejected and (not features or len(features) < 2):
             rejected = True
             reason = "No features"
 
