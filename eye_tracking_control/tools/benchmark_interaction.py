@@ -53,10 +53,10 @@ class PipelineBenchmark:
         self.estimator = GazeEstimator(self.screen_w, self.screen_h, smoothing_factor=0.3)
         # Mock calibration for testing
         self.estimator._calibrated = True
-        self.estimator._coeffs_x = np.array([960.0, 0, -50.0, 0, 0, 0])
-        self.estimator._coeffs_y = np.array([540.0, 50.0, 0, 0, 0, 0])
-        self.estimator._feature_mean = np.zeros(5)
-        self.estimator._feature_std = np.ones(5)
+        self.estimator._coeffs_x = np.array([960.0, 0, -50.0])
+        self.estimator._coeffs_y = np.array([540.0, 50.0, 0])
+        self.estimator._feature_mean = np.zeros(2)
+        self.estimator._feature_std = np.ones(2)
         
         self.interaction = InteractionEngine(self.screen_w, self.screen_h)
 
@@ -86,10 +86,10 @@ class PipelineBenchmark:
         """Measure Cursor Jitter (RMS error during static fixation)."""
         self.estimator = GazeEstimator(self.screen_w, self.screen_h, smoothing_factor=0.3)
         self.estimator._calibrated = True
-        self.estimator._coeffs_x = np.array([960.0, 0, -50.0, 0, 0, 0])
-        self.estimator._coeffs_y = np.array([540.0, 50.0, 0, 0, 0, 0])
-        self.estimator._feature_mean = np.zeros(5)
-        self.estimator._feature_std = np.ones(5)
+        self.estimator._coeffs_x = np.array([960.0, 0, -50.0])
+        self.estimator._coeffs_y = np.array([540.0, 50.0, 0])
+        self.estimator._feature_mean = np.zeros(2)
+        self.estimator._feature_std = np.ones(2)
         self.interaction = InteractionEngine(self.screen_w, self.screen_h)
         
         xs, ys = [], []
@@ -111,10 +111,10 @@ class PipelineBenchmark:
         """Measure latency as phase delay reaching 90% of a step response."""
         self.estimator = GazeEstimator(self.screen_w, self.screen_h, smoothing_factor=0.3)
         self.estimator._calibrated = True
-        self.estimator._coeffs_x = np.array([960.0, 0, -50.0, 0, 0, 0])
-        self.estimator._coeffs_y = np.array([540.0, 50.0, 0, 0, 0, 0])
-        self.estimator._feature_mean = np.zeros(5)
-        self.estimator._feature_std = np.ones(5)
+        self.estimator._coeffs_x = np.array([960.0, 0, -50.0])
+        self.estimator._coeffs_y = np.array([540.0, 50.0, 0])
+        self.estimator._feature_mean = np.zeros(2)
+        self.estimator._feature_std = np.ones(2)
         self.interaction = InteractionEngine(self.screen_w, self.screen_h)
         
         # Settle at 0,0
@@ -149,10 +149,10 @@ class PipelineBenchmark:
         """Measure RMSE tracking a moving target."""
         self.estimator = GazeEstimator(self.screen_w, self.screen_h, smoothing_factor=0.3)
         self.estimator._calibrated = True
-        self.estimator._coeffs_x = np.array([960.0, 0, -50.0, 0, 0, 0])
-        self.estimator._coeffs_y = np.array([540.0, 50.0, 0, 0, 0, 0])
-        self.estimator._feature_mean = np.zeros(5)
-        self.estimator._feature_std = np.ones(5)
+        self.estimator._coeffs_x = np.array([960.0, 0, -50.0])
+        self.estimator._coeffs_y = np.array([540.0, 50.0, 0])
+        self.estimator._feature_mean = np.zeros(2)
+        self.estimator._feature_std = np.ones(2)
         self.interaction = InteractionEngine(self.screen_w, self.screen_h)
         errors = []
         
@@ -180,10 +180,10 @@ class PipelineBenchmark:
         """Measure maximum overshoot after a sudden saccade."""
         self.estimator = GazeEstimator(self.screen_w, self.screen_h, smoothing_factor=0.3)
         self.estimator._calibrated = True
-        self.estimator._coeffs_x = np.array([960.0, 0, -50.0, 0, 0, 0])
-        self.estimator._coeffs_y = np.array([540.0, 50.0, 0, 0, 0, 0])
-        self.estimator._feature_mean = np.zeros(5)
-        self.estimator._feature_std = np.ones(5)
+        self.estimator._coeffs_x = np.array([960.0, 0, -50.0])
+        self.estimator._coeffs_y = np.array([540.0, 50.0, 0])
+        self.estimator._feature_mean = np.zeros(2)
+        self.estimator._feature_std = np.ones(2)
         self.interaction = InteractionEngine(self.screen_w, self.screen_h)
         
         # Settle
@@ -227,10 +227,10 @@ class PipelineBenchmark:
         """Measure false positive clicks during active scanning."""
         self.estimator = GazeEstimator(self.screen_w, self.screen_h, smoothing_factor=0.3)
         self.estimator._calibrated = True
-        self.estimator._coeffs_x = np.array([960.0, 0, -50.0, 0, 0, 0])
-        self.estimator._coeffs_y = np.array([540.0, 50.0, 0, 0, 0, 0])
-        self.estimator._feature_mean = np.zeros(5)
-        self.estimator._feature_std = np.ones(5)
+        self.estimator._coeffs_x = np.array([960.0, 0, -50.0])
+        self.estimator._coeffs_y = np.array([540.0, 50.0, 0])
+        self.estimator._feature_mean = np.zeros(2)
+        self.estimator._feature_std = np.ones(2)
         self.interaction = InteractionEngine(self.screen_w, self.screen_h)
         fp_count = 0
         
@@ -250,10 +250,10 @@ class PipelineBenchmark:
         """Measure missed clicks during intentional dwelling."""
         self.estimator = GazeEstimator(self.screen_w, self.screen_h, smoothing_factor=0.3)
         self.estimator._calibrated = True
-        self.estimator._coeffs_x = np.array([960.0, 0, -50.0, 0, 0, 0])
-        self.estimator._coeffs_y = np.array([540.0, 50.0, 0, 0, 0, 0])
-        self.estimator._feature_mean = np.zeros(5)
-        self.estimator._feature_std = np.ones(5)
+        self.estimator._coeffs_x = np.array([960.0, 0, -50.0])
+        self.estimator._coeffs_y = np.array([540.0, 50.0, 0])
+        self.estimator._feature_mean = np.zeros(2)
+        self.estimator._feature_std = np.ones(2)
         self.interaction = InteractionEngine(self.screen_w, self.screen_h)
         successes = 0
         trials = 10

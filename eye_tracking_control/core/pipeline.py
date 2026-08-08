@@ -320,8 +320,7 @@ class PipelineController:
             if not self._paused and self._gaze_estimator._calibrated:
                 self._cursor_controller.move_to(cursor_x, cursor_y)
                 if data.cursor.is_clicking:
-                    self._cursor_controller.click('left')
-                    # Reset dwell state by re-initializing the interaction engine (or resetting state)
+                    pass # self._cursor_controller.click('left')  # Disabled temporarily per user request
                     # For now, let's just let it click once per threshold pass.
                     
         else:

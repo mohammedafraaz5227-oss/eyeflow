@@ -52,8 +52,8 @@ class GazeEstimator:
         # Polynomial Features + Ridge Regression state
         self._feature_mean: Optional[np.ndarray] = None
         self._feature_std: Optional[np.ndarray] = None
-        self._ridge_alpha_x = 0.5  # Less aggressive regularization needed for DeepGaze
-        self._ridge_alpha_y = 0.5
+        self._ridge_alpha_x = 0.05  # Tighter regularization for simple linear fit
+        self._ridge_alpha_y = 0.05
 
         # Biquadratic polynomial coefficients for X and Y mapping
         self._coeffs_x: Optional[np.ndarray] = None
@@ -64,17 +64,14 @@ class GazeEstimator:
             screen_width, screen_height, smoothing_factor,
         )
 
-    def _build_biquadratic_features(self, pitch: float, yaw: float) -> List[float]:
-        """Convert Pitch and Yaw into biquadratic polynomial features.
+    def _build_linear_features(self, pitch: float, yaw: float) -> List[float]:
+        """Convert Pitch and Yaw into simple linear features for affine mapping.
         
-        Features: [Pitch, Yaw, Pitch*Yaw, Pitch^2, Yaw^2]
+        Features: [Pitch, Yaw]
         """
         return [
             pitch,
-            yaw,
-            pitch * yaw,
-            pitch ** 2,
-            yaw ** 2
+            yaw
         ]
 
     def estimate(
@@ -110,7 +107,7 @@ class GazeEstimator:
         # Build features for mapping and calibration
         # We store [Pitch, Yaw] as the primary features, so the FixationDetector
         # works directly on the angles.
-        features = self._build_biquadratic_features(smooth_pitch, smooth_yaw)
+        features = self._build_linear_features(smooth_pitch, smooth_yaw)
         
         # Map to screen
         screen_x, screen_y = self._map_to_screen(features)
