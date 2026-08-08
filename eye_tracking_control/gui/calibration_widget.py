@@ -135,7 +135,7 @@ class CalibrationWidget(QWidget):
         # Fixation detector (independent of InteractionEngine)
         self._fixation_detector = CalibrationFixationDetector(
             window_size=15,
-            variance_threshold=0.008,
+            variance_threshold=1.0,
             stability_frames=5,
         )
 
