@@ -72,7 +72,9 @@ class DeepGazeEngine:
                 
             session_options = ort.SessionOptions()
             session_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+            session_options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
             session_options.intra_op_num_threads = 2 # Keep thread count low to prevent CPU hogging
+            session_options.inter_op_num_threads = 1
             
             self._session = ort.InferenceSession(
                 self._model_path, 

@@ -11,6 +11,7 @@ from typing import List, Tuple, Optional
 
 from core.types import GazeData
 from core.filters import PointFilter
+from gaze.personal_profile import PersonalCalibrationProfile
 
 @dataclass
 class MagneticTarget:
@@ -60,7 +61,11 @@ class InteractionEngine:
         self._history_len = 15  # ~500ms at 30fps
         self._gaze_history_x = deque(maxlen=self._history_len)
         self._gaze_history_y = deque(maxlen=self._history_len)
-        self._dispersion_threshold = 80.0  # pixels
+        
+        # Continuous Learning Profile
+        self._profile = PersonalCalibrationProfile()
+        self._dispersion_threshold = self._profile.get_adapted_dispersion_threshold()
+        self._dwell_time_seconds = self._profile.get_adapted_dwell_time() / 1000.0
         
         # State
         self._state = FixationState.FREE
@@ -129,6 +134,9 @@ class InteractionEngine:
         is_fixating = dispersion < effective_threshold
         
         if is_fixating:
+            # Update user's natural dispersion running average
+            self._profile.update_fixation_dispersion(dispersion)
+            
             if self._fixation_start_time is None:
                 self._fixation_start_time = current_time
                 self._locked_x = smooth_x
@@ -140,10 +148,14 @@ class InteractionEngine:
             # Progressive Locking
             if fixation_duration > 0.4:
                 self._state = FixationState.HARD_LOCK
-            if fixation_duration > 1.2:
+                
+            if fixation_duration > self._dwell_time_seconds:
                 self._state = FixationState.DWELL_CLICK
+                # Log success for continuous learning
+                self._profile.record_dwell_attempt(success=True)
+                
                 # CRITICAL: Reset the fixation timer so we don't spam clicks 30 times a second!
-                # We reset it forward so that the user has to hold for ANOTHER 1.2s to click again,
+                # We reset it forward so that the user has to hold for ANOTHER Dwell Cycle to click again,
                 # or look away to break the lock.
                 self._fixation_start_time = current_time
                 
@@ -180,6 +192,12 @@ class InteractionEngine:
                 # Release threshold must be larger than dispersion threshold to provide hysteresis
                 if dist_from_lock > self._dispersion_threshold * 2.0:
                     self._state = FixationState.FREE
+                    if self._fixation_start_time is not None:
+                        # Log abandonment if they didn't complete the dwell
+                        duration = current_time - self._fixation_start_time
+                        if duration < self._dwell_time_seconds:
+                            self._profile.record_dwell_attempt(success=False)
+                            
                     self._fixation_start_time = None
                     self._locked_x = None
                     self._locked_y = None
